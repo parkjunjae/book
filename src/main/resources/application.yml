@@ -8,10 +8,12 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop # 'create', 'update', 'validate', 'none' 중 선택
+      dialect: org.hibernate.dialect.MySQL5Dialect
+      ddl-auto: none # 'create', 'update', 'validate', 'none' 중 선택
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect # MySQL 8 이상에 맞는 Dialect
+        format_sql: true
 
 logging:
   level:
