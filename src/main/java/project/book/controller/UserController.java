@@ -1,2 +1,42 @@
-package project.book.controller;public class UserController {
+package project.book.controller;
+
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import project.book.model.Customer;
+import project.book.repository.CustomerRepository;
+
+@RestController
+@RequiredArgsConstructor
+public class UserController {
+
+    private final CustomerRepository customerRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@RequestBody Customer customer){
+        try {
+            String hashPwd = passwordEncoder.encode(customer.getPwd());
+            customer.setPwd(hashPwd);
+            Customer saveCustomer = customerRepository.save(customer);
+            if(saveCustomer.getId() > 0){
+                return ResponseEntity.status(HttpStatus.CREATED)
+                                .body("생성완료");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body("이메일을 잘못 입력했다");
+            }
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body("생성 불가" + e.getMessage());
+
+        }
+
+    }
 }
