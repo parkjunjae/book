@@ -5,36 +5,25 @@ spring:
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-
   config:
-    import: application_prod.yml
-
-  profiles:
-    active: prod
+    activate:
+      on-profile: prod
 
 
   jpa:
     hibernate:
       dialect: org.hibernate.dialect.MySQL5Dialect
       ddl-auto: none # 'create', 'update', 'validate', 'none' 중 선택
-      show_sql: true
+      show_sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect # MySQL 8 이상에 맞는 Dialect
-        format_sql: true
+        format_sql: false
 
 
 logging:
   level:
-    org.springframework.security : TRACE
+    org.springframework.security : Error
     org.hibernate.SQL: debug
-
-
-server:
-  servlet:
-    session:
-      timeout: 2m
-
-
 
 

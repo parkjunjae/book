@@ -7,9 +7,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @SpringBootApplication
-//@EnableWebSecurity
-//@EnableJpaRepositories("project.book.repository")
-//@EntityScan("project.book.model")
 public class BookApplication {
 
 	public static void main(String[] args) {
