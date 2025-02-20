@@ -27,12 +27,13 @@ public class ProjectSecurityConfig {
 //        http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());
 //        http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());
         http
-//                .sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession")) // 세션이 없어질 때 이 url로 리다이렉션
+                .sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession").maximumSessions(3).maxSessionsPreventsLogin(true)) // 세션이 없어질 때 이 url로 리다이렉션
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure()) // only http
                 .csrf(csrfConfig -> csrfConfig.disable())
                 .authorizeHttpRequests((requests) -> requests.requestMatchers("/myAccount","/myBalance","/myCards").authenticated()
-                .requestMatchers("/notices", "/myloans","/error","/register").permitAll()
+                .requestMatchers("/notices", "/myloans","/error","/register","/invalidSession").permitAll()
         );
+
         http.formLogin(withDefaults());
         http.httpBasic(hdc -> hdc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
         http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler())); // global config
