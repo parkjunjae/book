@@ -30,7 +30,7 @@ public class ProjectSecurityConfig {
                 .sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession").maximumSessions(3).maxSessionsPreventsLogin(true)) // 세션이 없어질 때 이 url로 리다이렉션
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure()) // only http
                 .csrf(csrfConfig -> csrfConfig.disable())
-                .authorizeHttpRequests((requests) -> requests.requestMatchers("/myAccount","/myBalance","/myCards").authenticated()
+                .authorizeHttpRequests((requests) -> requests.requestMatchers("/myAccount","/myBalance","/myCards","/user").authenticated()
                 .requestMatchers("/notices", "/myloans","/error","/register","/invalidSession").permitAll()
         );
 

@@ -39,7 +39,7 @@ public class ProjectSecurityProdConfig {
                 .sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession").maximumSessions(1).maxSessionsPreventsLogin(true))
                 .requiresChannel(rcc -> rcc.anyRequest().requiresSecure()) // only https
                 .csrf(csrfConfig -> csrfConfig.disable())
-                .authorizeHttpRequests((requests) -> requests.requestMatchers("/myAccount","/myBalance","/myCards").authenticated()
+                .authorizeHttpRequests((requests) -> requests.requestMatchers("/myAccount","/myBalance","/myCards","/user").authenticated()
                 .requestMatchers("/notices", "/myloans","/error","/register","/invalidSession").permitAll()
         );
         http.formLogin(withDefaults());
