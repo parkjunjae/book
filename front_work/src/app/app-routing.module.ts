@@ -18,12 +18,12 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent},
   { path: 'contact', component: ContactComponent},
   { path: 'notices', component: NoticesComponent},
-  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthActivateRouteGuard]},
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthActivateRouteGuard]}, // 인증된 유저만 보이게 
   { path: 'logout', component: LogoutComponent},
-  { path: 'myAccount', component: AccountComponent, canActivate: [AuthActivateRouteGuard]},
-  { path: 'myBalance', component: BalanceComponent, canActivate: [AuthActivateRouteGuard]},
-  { path: 'myLoans', component: LoansComponent, canActivate: [AuthActivateRouteGuard]},
-  { path: 'myCards', component: CardsComponent, canActivate: [AuthActivateRouteGuard]}
+  { path: 'myAccount', component: AccountComponent, canActivate: [AuthActivateRouteGuard]}, // 인증된 유저만 보이게 
+  { path: 'myBalance', component: BalanceComponent, canActivate: [AuthActivateRouteGuard]}, // 인증된 유저만 보이게 
+  { path: 'myLoans', component: LoansComponent, canActivate: [AuthActivateRouteGuard]}, // 인증된 유저만 보이게 
+  { path: 'myCards', component: CardsComponent, canActivate: [AuthActivateRouteGuard]} // 인증된 유저만 보이게 
 ];
 
 @NgModule({
