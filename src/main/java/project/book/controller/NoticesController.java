@@ -18,16 +18,17 @@ import java.util.concurrent.TimeUnit;
 public class NoticesController {
 
     private final NoticeRepository noticeRepository;
-    @GetMapping("/notices")
-    public ResponseEntity<List<Notice>> getNotices(){
-     List<Notice> notice = noticeRepository.findAllActiveNotices();
 
-     if (notice != null) {
-         return ResponseEntity.ok()
-                 .cacheControl(CacheControl.maxAge(60, TimeUnit.SECONDS))
-                 .body(notice);
-     } else {
-         return null;
-     }
+    @GetMapping("/notices")
+    public ResponseEntity<List<Notice>> getNotices() {
+        List<Notice> notices = noticeRepository.findAllActiveNotices();
+        if (notices != null) {
+            return ResponseEntity.ok()
+                    .cacheControl(CacheControl.maxAge(60, TimeUnit.SECONDS))
+                    .body(notices);
+        } else {
+            return null;
+        }
     }
+
 }
