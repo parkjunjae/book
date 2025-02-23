@@ -3,6 +3,7 @@ import { HttpInterceptor,HttpRequest,HttpHandler,HttpErrorResponse, HttpHeaders 
 import {Router} from '@angular/router';
 import {tap} from 'rxjs/operators';
 import { User } from 'src/app/model/user.model';
+import { getCookie } from 'typescript-cookie';
 
 @Injectable()
 export class XhrInterceptor implements HttpInterceptor {
@@ -18,6 +19,12 @@ export class XhrInterceptor implements HttpInterceptor {
     if(this.user && this.user.password && this.user.email){
       httpHeaders = httpHeaders.append('Authorization', 'Basic ' + window.btoa(this.user.email + ':' + this.user.password));
     }
+
+    let xsrf = sessionStorage.getItem("XSRF-TOKEN");
+    
+    if(xsrf) {
+      httpHeaders = httpHeaders.append('X-XSRF-TOKEN', xsrf);
+    } 
 
     httpHeaders = httpHeaders.append('X-Requested-With', 'XMLHttpRequest');
     const xhr = req.clone({
