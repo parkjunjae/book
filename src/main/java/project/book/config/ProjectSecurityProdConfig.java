@@ -53,7 +53,7 @@ public class ProjectSecurityProdConfig {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration config = new CorsConfiguration();
-                        config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+                        config.setAllowedOrigins(Collections.singletonList("https://localhost:4200"));
                         config.setAllowedMethods(Collections.singletonList("*"));
                         config.setAllowCredentials(true);
                         config.setAllowedHeaders(Collections.singletonList("*"));
@@ -66,7 +66,8 @@ public class ProjectSecurityProdConfig {
                         .ignoringRequestMatchers("/contact","/register") // 토큰값이 필요없는 api
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-                .authorizeHttpRequests((requests) -> requests.requestMatchers("/myAccount","/myBalance","/myCards","/user").authenticated()
+                .authorizeHttpRequests((requests) -> requests.requestMatchers("/myAccount","/myBalance","/myCards").hasAuthority("ROLE_USER")
+                        .requestMatchers("/user").authenticated()
                 .requestMatchers("/notices", "/myloans","/error","/register","/invalidSession").permitAll()
         );
         http.formLogin(withDefaults());

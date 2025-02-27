@@ -58,8 +58,13 @@ public class ProjectSecurityConfig {
                         .ignoringRequestMatchers("/contact","/register") // 토큰값이 필요없는 api
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-                .authorizeHttpRequests((requests) -> requests.requestMatchers("/myAccount","/myBalance","/myCards","/user").authenticated()
-                .requestMatchers("/notices", "/myloans","/error","/register","/invalidSession","/contact").permitAll()
+                .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers("/myAccount").hasRole("USER")
+                        .requestMatchers("/myBalance").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/myCards").hasRole("USER")
+                        .requestMatchers("/myLoans").hasRole("USER")
+                        .requestMatchers("/user").authenticated()
+                .requestMatchers("/notices","/error","/register","/invalidSession","/contact","/debug/roles").permitAll()
 
         );
 

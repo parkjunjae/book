@@ -19,14 +19,12 @@ import org.springframework.stereotype.Component;
 public class EazyBankUsernamePwdAuthenticationProvider implements AuthenticationProvider {
 
     private final UserDetailsService userDetailsService;
-
     private final PasswordEncoder passwordEncoder;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String pwd = authentication.getCredentials().toString();
-
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         if (passwordEncoder.matches(pwd, userDetails.getPassword())){
             return new UsernamePasswordAuthenticationToken(username,pwd,userDetails.getAuthorities());

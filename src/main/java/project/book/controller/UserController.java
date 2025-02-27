@@ -27,7 +27,7 @@ public class UserController {
             customer.setPwd(hashPwd);
             customer.setCreateDt(new Date(System.currentTimeMillis()));
             Customer saveCustomer = customerRepository.save(customer);
-                if (!customerRepository.existsByEmail(customer.getEmail())) {
+                if (customerRepository.existsByEmail(customer.getEmail())) {
                     if (saveCustomer.getId() > 0) {
                         return ResponseEntity.status(HttpStatus.CREATED)
                                 .body("생성완료");

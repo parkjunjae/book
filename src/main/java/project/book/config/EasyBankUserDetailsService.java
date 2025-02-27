@@ -12,6 +12,7 @@ import project.book.model.Customer;
 import project.book.repository.CustomerRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +25,11 @@ public class EasyBankUserDetailsService implements UserDetailsService {
         Customer customer = customerRepository.findByEmail(email).orElseThrow(() ->
                 new UsernameNotFoundException("등록된 이메일이 없습니다." + email));
 
-        List<GrantedAuthority> grantedAuthorities = List.of(new SimpleGrantedAuthority(customer.getRole()));
-        return new User(customer.getEmail(), customer.getPwd(),grantedAuthorities);
+        List<GrantedAuthority> authorities = customer.getAuthorities().stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.getName()))
+                .collect(Collectors.toList()); // 권한 설정
+
+
+        return new User(customer.getEmail(), customer.getPwd(),authorities);
     }
 }
