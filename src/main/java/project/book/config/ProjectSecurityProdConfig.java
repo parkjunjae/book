@@ -19,6 +19,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import project.book.exceptionhanding.CustomAccessDeniedHandler;
 import project.book.exceptionhanding.CustomBasicAuthenticationEntryPoint;
 import project.book.filter.CsrfCookieFilter;
+import project.book.filter.RequestValidationAfterFilter;
+import project.book.filter.RequestValidationBeforeFilter;
 
 import java.util.Collections;
 
@@ -66,6 +68,8 @@ public class ProjectSecurityProdConfig {
                         .ignoringRequestMatchers("/contact","/register") // 토큰값이 필요없는 api
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new RequestValidationAfterFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests.requestMatchers("/myAccount","/myBalance","/myCards").hasAuthority("ROLE_USER")
                         .requestMatchers("/user").authenticated()
                 .requestMatchers("/notices", "/myloans","/error","/register","/invalidSession").permitAll()

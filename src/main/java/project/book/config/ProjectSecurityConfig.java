@@ -7,12 +7,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -22,9 +19,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import project.book.exceptionhanding.CustomAccessDeniedHandler;
 import project.book.exceptionhanding.CustomBasicAuthenticationEntryPoint;
 import project.book.filter.CsrfCookieFilter;
-
-import javax.sql.DataSource;
-
+import project.book.filter.RequestValidationAfterFilter;
+import project.book.filter.RequestValidationBeforeFilter;
 import java.util.Collections;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -55,9 +51,11 @@ public class ProjectSecurityConfig {
                 .securityContext(contextConfig -> contextConfig.requireExplicitSave(false))
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure()) // only http
                 .csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
-                        .ignoringRequestMatchers("/contact","/register") // 토큰값이 필요없는 api
+                        .ignoringRequestMatchers("/contact","/register") // csrf이 필요없는 api
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new RequestValidationAfterFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/myAccount").hasRole("USER")
                         .requestMatchers("/myBalance").hasAnyRole("USER", "ADMIN")

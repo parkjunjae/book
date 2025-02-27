@@ -14,19 +14,19 @@ spring:
 
 
   jpa:
+    show_sql: true
     hibernate:
-      dialect: org.hibernate.dialect.MySQL5Dialect
       ddl-auto: update # 'create', 'update', 'validate', 'none' 중 선택
-      show_sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect # MySQL 8 이상에 맞는 Dialect
         format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect # MySQL 8 이상에 맞는 Dialect
+
 
 
 logging:
   level:
-    org.springframework.security : TRACE
+    org.springframework.security : debug
     org.hibernate.SQL: debug
 
 
