@@ -18,10 +18,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import project.book.exceptionhanding.CustomAccessDeniedHandler;
 import project.book.exceptionhanding.CustomBasicAuthenticationEntryPoint;
-import project.book.filter.CsrfCookieFilter;
-import project.book.filter.RequestValidationAfterFilter;
-import project.book.filter.RequestValidationBeforeFilter;
+import project.book.filter.*;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -49,8 +48,8 @@ public class ProjectSecurityProdConfig {
 //        http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());
         CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
         http
-                .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
-                .securityContext(context -> context.requireExplicitSave(false))
+                .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                //.securityContext(context -> context.requireExplicitSave(false))
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(new CorsConfigurationSource() {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
@@ -59,6 +58,7 @@ public class ProjectSecurityProdConfig {
                         config.setAllowedMethods(Collections.singletonList("*"));
                         config.setAllowCredentials(true);
                         config.setAllowedHeaders(Collections.singletonList("*"));
+                        config.setExposedHeaders(Arrays.asList("Authorization"));
                         config.setMaxAge(3600L);
                         return config;
                     }
@@ -70,6 +70,8 @@ public class ProjectSecurityProdConfig {
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new RequestValidationAfterFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests.requestMatchers("/myAccount","/myBalance","/myCards").hasAuthority("ROLE_USER")
                         .requestMatchers("/user").authenticated()
                 .requestMatchers("/notices", "/myloans","/error","/register","/invalidSession").permitAll()
