@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @SpringBootApplication
-@EnableWebSecurity(debug = true) // 로그로 필터 확인
+//@EnableWebSecurity(debug = false) // 로그로 필터 확인
 public class BookApplication {
 
 	public static void main(String[] args) {
