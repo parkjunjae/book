@@ -95,9 +95,9 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK).header(ApplicationConstants.JWT_HEADER, jwt)
                     .body(new LoginResponseDTO(HttpStatus.OK.getReasonPhrase(), jwt));
         }catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponseDTO("잘못됨",""));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponseDTO(HttpStatus.BAD_REQUEST.getReasonPhrase(),"잘못됨"));
         }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new LoginResponseDTO("로그인 실패",""));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new LoginResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),"로그인 실패"));
         }
     }
 }
