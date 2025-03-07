@@ -28,5 +28,5 @@ public class Contact {
     private String message;
 
     @Column(name = "create_dt")
-    private Date createDt;
+    private String createDt;
 }

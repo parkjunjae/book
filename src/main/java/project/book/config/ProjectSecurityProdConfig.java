@@ -65,16 +65,20 @@ public class ProjectSecurityProdConfig {
                 }))
                 .requiresChannel(rcc -> rcc.anyRequest().requiresSecure()) // only https
                 .csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
-                        .ignoringRequestMatchers("/contact","/register") // 토큰값이 필요없는 api
+                        .ignoringRequestMatchers("/contact","/register","/apiLogin") // 토큰값이 필요없는 api
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new RequestValidationAfterFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(new JwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
-                .authorizeHttpRequests((requests) -> requests.requestMatchers("/myAccount","/myBalance","/myCards").hasAuthority("ROLE_USER")
+                .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers("/myAccount").hasRole("USER")
+                        .requestMatchers("/myBalance").hasAnyRole("USER","ADMIN")
+                        .requestMatchers("/myCards").hasRole("USER")
+                        .requestMatchers("/myloans").authenticated()
                         .requestMatchers("/user").authenticated()
-                .requestMatchers("/notices", "/myloans","/error","/register","/invalidSession").permitAll()
+                .requestMatchers("/notices","/error","/register","/invalidSession","/apiLogin").permitAll()
         );
         http.formLogin(withDefaults());
         http.httpBasic(hdc -> hdc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
