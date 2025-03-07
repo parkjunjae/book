@@ -7,11 +7,16 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -62,23 +67,41 @@ public class ProjectSecurityConfig {
                         .requestMatchers("/myLoans").authenticated()
                         .requestMatchers("/myCards").hasRole("USER")
                         .requestMatchers("/user").authenticated()
-                        .requestMatchers("/notices", "/contact", "/error", "/register", "/invalidSession", "/apiLogin").permitAll());
+                        .requestMatchers("/secure").authenticated()
+                        .requestMatchers("/notices", "/contact", "/error",
+                                "/register", "/invalidSession",
+                                "/apiLogin").permitAll());
         http.formLogin(withDefaults());
+        http.oauth2Login(Customizer.withDefaults());
         http.httpBasic(hbc -> hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
         http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
         return http.build();
     }
 
-//    @Bean
-//    public UserDetailsService userDetailsService(DataSource dataSource){
-//        return new JdbcUserDetailsManager(dataSource);
-//    }
+
+    @Bean
+    ClientRegistrationRepository clientRegistrationRepository(){
+        ClientRegistration github = githubClientRegistration();
+//        ClientRegistration facebook = facebookClientRegistration();
+        return new InMemoryClientRegistrationRepository(github);
+    }
+
+    private ClientRegistration githubClientRegistration(){
+        return CommonOAuth2Provider.GITHUB.getBuilder("github").clientId("Ov23liEIhqNl5l0Fgddg")
+                .clientSecret("72d320bc48eaf8df117a3ad0e36a8f559382bc7a").build();
+    }
+    private ClientRegistration facebookClientRegistration(){
+        return CommonOAuth2Provider.FACEBOOK.getBuilder("facebook").clientId("")
+                .clientSecret("").build();
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
 //        return new BCryptPasswordEncoder();
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
+
+
 
     @Bean
     public CompromisedPasswordChecker compromisedPasswordChecker(){
