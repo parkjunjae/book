@@ -6,9 +6,11 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   security:
-    user:
-      name: user
-      password: 1234
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${JWK_SET_URI:http://localhost:8180/realms/eazybankdev/protocol/openid-connect/certs}
+
 
 
   config:

@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -44,6 +45,8 @@ public class ProjectSecurityProdConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRoleConverter());
 //        http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());
 //        http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());
         CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
@@ -68,10 +71,11 @@ public class ProjectSecurityProdConfig {
                         .ignoringRequestMatchers("/contact","/register","/apiLogin") // 토큰값이 필요없는 api
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-                .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
-                .addFilterAfter(new RequestValidationAfterFilter(), BasicAuthenticationFilter.class)
-                .addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
-                .addFilterBefore(new JwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
+
+//                .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
+//                .addFilterAfter(new RequestValidationAfterFilter(), BasicAuthenticationFilter.class)
+//                .addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+//                .addFilterBefore(new JwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/myAccount").hasRole("USER")
                         .requestMatchers("/myBalance").hasAnyRole("USER","ADMIN")
@@ -80,8 +84,10 @@ public class ProjectSecurityProdConfig {
                         .requestMatchers("/user").authenticated()
                 .requestMatchers("/notices","/error","/register","/invalidSession","/apiLogin").permitAll()
         );
-        http.formLogin(withDefaults());
-        http.httpBasic(hdc -> hdc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
+//        http.formLogin(withDefaults());
+//        http.httpBasic(hdc -> hdc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
+        http.oauth2ResourceServer(rsc -> rsc.jwt(jwtConfigurer ->
+                jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter)));
         http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
         return http.build();
     }
@@ -91,15 +97,15 @@ public class ProjectSecurityProdConfig {
 //        return new JdbcUserDetailsManager(dataSource);
 //    }
 
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-//        return new BCryptPasswordEncoder();
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
-
-    @Bean
-    public CompromisedPasswordChecker compromisedPasswordChecker(){
-        return new HaveIBeenPwnedRestApiPasswordChecker();
-
-    }
+//    @Bean
+//    public PasswordEncoder passwordEncoder(){
+////        return new BCryptPasswordEncoder();
+//        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+//    }
+//
+//    @Bean
+//    public CompromisedPasswordChecker compromisedPasswordChecker(){
+//        return new HaveIBeenPwnedRestApiPasswordChecker();
+//
+//    }
 }
